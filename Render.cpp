@@ -249,11 +249,12 @@ void Render::clearArea(int x, int x_size, int y, int y_size){
 
 void Render::bingkai(){
 	Color c = Color(0, 0, 0, 255);
-	
-	Point P1 = Point(P_start.getAbsis()-1,P_start.getOrdinat()-1);
-	Point P2 = Point(P_finish.getAbsis()+1,P_start.getOrdinat()-1);
-	Point P3 = Point(P_finish.getAbsis()+1,P_finish.getOrdinat()+1);
-	Point P4 = Point(P_start.getAbsis()-1,P_finish.getOrdinat()+1);
+	int pad = 3;
+
+	Point P1 = Point(P_start.getAbsis()-pad,P_start.getOrdinat()-pad);
+	Point P2 = Point(P_finish.getAbsis()+pad,P_start.getOrdinat()-pad);
+	Point P3 = Point(P_finish.getAbsis()+pad,P_finish.getOrdinat()+pad);
+	Point P4 = Point(P_start.getAbsis()-pad,P_finish.getOrdinat()+pad);
 
 	drawLine(Line(P1, P2), c);
 	drawLine(Line(P2, P3), c);
@@ -261,56 +262,67 @@ void Render::bingkai(){
 	drawLine(Line(P4, P1), c);
 }
 
-void Render::skala_elements(float size_comparison){
+void Render::skala_elements(int before, int after){
+	// std::cout<<shapes[0].getLineAt(2).getP1().getAbsis() ;
+	// std::cout<<( (shapes[0].getLineAt(2).getP1().getAbsis())/before*after);
 	for(int i = 0; i < asset_count; ++i){
         for(int j = 0; j < shapes[i].getNeff(); j++){
-			Line new_line = Line(Point(shapes[i].getLineAt(j).getP1().getAbsis()*size_comparison, shapes[i].getLineAt(j).getP1().getOrdinat()*size_comparison), Point(shapes[i].getLineAt(j).getP2().getAbsis()*size_comparison, shapes[i].getLineAt(j).getP2().getOrdinat()*size_comparison));
+			Line new_line = Line(
+				Point(
+					(shapes[i].getLineAt(j).getP1().getAbsis())/before*after, 
+					(shapes[i].getLineAt(j).getP1().getOrdinat())/before*after), 
+				Point(
+					(shapes[i].getLineAt(j).getP2().getAbsis())/before*after, 
+					(shapes[i].getLineAt(j).getP2().getOrdinat())/before*after)
+				);
 			shapes[i].setLineAt(j, new_line);
 		}
     }
 }
 
-void Render::skala(int s){
-	int original_x_finish = screen.getXRes() -10;
-	int original_y_finish = screen.getYRes() -10;
-	
-	// Getting and validating new finish point ordinat
-	int y_new = P_finish.getOrdinat() + s;
-	if (y_new >  original_y_finish) {
-		y_new = original_y_finish;
-	}
-	else if (y_new - P_start.getOrdinat() < 200) {
-		y_new = P_start.getOrdinat() + 200;
-	}
+int Render::skala(int before, int after){
+	int original_x_finish = screen.getXRes() - 10;
+	int original_y_finish = screen.getYRes() - 10;
+	int s;
 
-	if (y_new == P_finish.getOrdinat()) {
+	// Getting and validating new finish point
+	int y_new = (P_finish.getOrdinat() - P_start.getOrdinat())/before*after + P_start.getOrdinat();
+	int x_new = (P_finish.getAbsis() - P_start.getAbsis())/before*after + P_start.getAbsis();
+	if ((y_new > original_y_finish) || (x_new > original_x_finish)) {
 		// do nothing
-		// because the size is the same as before
+		return 1;
 	}
 	else {
-		int basic_length = original_x_finish -10;
-		int basic_height = original_y_finish -10;
-		float size_comparison = (float) (y_new - P_start.getOrdinat()) / (float) basic_height;
-		// Getting and validating new finish point absis
-		int x_new = P_start.getAbsis() + round(size_comparison * basic_length);
-		if (x_new > original_x_finish) {
-			x_new = original_x_finish;
-		}
-		else {
-			// updating Render condition
-			P_finish.setAbsis(x_new);
-			P_finish.setOrdinat(y_new);
+		// updating Render condition
+		P_finish.setAbsis(x_new);
+		P_finish.setOrdinat(y_new);
 
-			clearScreen();
+		clearScreen();
 
-			// DI SINI UPDATE SEMUA ELEMEN
-			skala_elements(size_comparison);
-			bingkai();
-			for(int i = 0; i < asset_count; ++i){
-				drawAsset(i, 50, 50);
-			}
+		skala_elements(before, after);
+		bingkai();
+		for(int i = 0; i < asset_count; i++){
+			drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
 		}
+		return 0;
 	}
+}
+
+void Render::translate_elements(int h, int v) {
+	for(int i = 0; i < asset_count; i++){
+        for(int j = 0; j < shapes[i].getNeff(); j++){
+			Line new_line = Line(
+				Point(
+					(shapes[i].getLineAt(j).getP1().getAbsis() + h), 
+					(shapes[i].getLineAt(j).getP1().getOrdinat() + v)), 
+				Point(
+					(shapes[i].getLineAt(j).getP2().getAbsis() + h), 
+					(shapes[i].getLineAt(j).getP2().getOrdinat() + v))
+				);
+			shapes[i].setLineAt(j, new_line);
+			// std::cout<< (shapes[i].getLineAt(j).getP1().getAbsis() + h) << " " << (shapes[i].getLineAt(j).getP1().getOrdinat() + v) << "...";
+		}
+    }
 }
 
 void Render::translate(int h, int v){
@@ -352,9 +364,11 @@ void Render::translate(int h, int v){
 		// NANTI DI SINI UPDATE SEMUA ELEMEN
 
 		clearScreen();
+		
+		// translate_elements(h, v);
 		bingkai();
-		for(int i = 0; i < asset_count; ++i){
-			drawAsset(i, 50, 50);
+		for(int i = 0; i < asset_count; i++){
+			drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
 		}
 	}
 }
@@ -363,8 +377,9 @@ void Render::map(){
 	clearScreen();
 	bingkai();
 	for(int i = 0; i < asset_count; ++i){
-        drawAsset(i, 50, 50);
+        drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
     }
+	int s = 10; // Skala
 	for(;;){
         if(terminal.getIsInput() == (int)State::RECEIVED){
 			char input = terminal.getInput();
@@ -382,10 +397,26 @@ void Render::map(){
 					translate(10, 0);
                     break;
 				case 'i': // smaller
-					skala(-10);
+					s--;
+					if (s < 1) {
+						s = 1;
+					}
+					else {
+						if(skala(s+1, s)) {
+							s++;
+						}
+					}
                     break;
 				case 'o': // bigger
-					skala(+10);
+					s++;
+					if (s > 10) {
+						s = 10;
+					}
+					else {
+						if(skala(s-1, s)) {
+							s--;
+						}
+					}
                     break;
                 default:
                     break;

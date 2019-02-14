@@ -20,7 +20,7 @@ class Render {
 		Color outlines[100];
 		int asset_count = 0;
 		Point P_start  = Point(10, 10);
-		Point P_finish = Point(screen.getXRes()-10, screen.getYRes()-10);
+		Point P_finish = Point(1010, 710);
 		void drawLineLow(int x0, int y0, int x1, int y1, Color C);
 		void drawLineHigh(int x0, int y0, int x1, int y1, Color C);
 	public:
@@ -39,8 +39,9 @@ class Render {
 		void drawAsset(int idx, int x_start, int y_start);
 		void doMotion();
 		void bingkai();
-		void skala_elements(float size_comparison);
-		void skala(int s);
+		void skala_elements(int before, int after);
+		int skala(int before, int after);
+		void translate_elements(int h, int v);
 		void translate(int h, int v);
 		void map();
 		void drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_start);
