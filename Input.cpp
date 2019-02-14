@@ -44,7 +44,7 @@ void * Input::receiveInputArrowKey(){
 }
 
 void Input::exit(){
-	//system("/bin/stty -raw echo && clear");
+	system("/bin/stty -raw echo && clear");
 	pthread_exit(NULL);
 }
 
