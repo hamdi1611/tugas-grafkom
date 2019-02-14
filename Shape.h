@@ -16,14 +16,14 @@ class Shape {
         /* Operator Empat Sekawan */
         Shape();
         Shape(unsigned int amount);
-        Shape(const Shape &shape);
+        Shape(Shape &shape);
         ~Shape();
         
         /*& getter and Setter */
         unsigned int getAmount() const;
         unsigned int getNeff() const;
         void setAmount(int amount);
-        Line getLineAt(unsigned int idx) const;
+        Line getLineAt(unsigned int idx);
         void setLineAt(unsigned int idx, Line line);
         Line getExtremeLine();
         /* Function and Procedure */

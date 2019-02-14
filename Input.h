@@ -6,7 +6,7 @@
 enum class State {RECEIVED = 0, WAITING = 1, STOP = 2};
 class Input{
     private:
-        const char INTERRUPT_CHARACTER = 'A';
+        const char INTERRUPT_CHARACTER = 'q';
         int isInput = (int)State::WAITING;
         char input;
         pthread_t tid;

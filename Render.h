@@ -39,7 +39,9 @@ class Render {
 		void drawAsset(int idx, int x_start, int y_start);
 		void doMotion();
 		void bingkai();
+		void skala_elements(float size_comparison);
 		void skala(int s);
+		void translate(int h, int v);
 		void map();
 		void drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_start);
 		void drawEmptyShape(Shape S, Color Outline);

@@ -3,7 +3,7 @@
 Input::Input(){
     typedef void * (*THREADFUNCPTR)(void *);
     //system("setterm -cursor off && /bin/stty raw -echo && clear");
-    pthread_create(&tid, NULL, (THREADFUNCPTR)&Input::receiveInputArrowKey, this);
+    pthread_create(&tid, NULL, (THREADFUNCPTR)&Input::receiveInput, this);
 }
 
 Input::~Input(){
@@ -13,7 +13,6 @@ void * Input::receiveInput(){
     while(isInput != (int)State::STOP){
 		while(isInput == (int)State::RECEIVED);
 		if(input = getchar()){
-			std::cout << input << std::endl;
 			if(input == INTERRUPT_CHARACTER){
 				isInput = (int)State::STOP;
 			}

@@ -261,6 +261,15 @@ void Render::bingkai(){
 	drawLine(Line(P4, P1), c);
 }
 
+void Render::skala_elements(float size_comparison){
+	for(int i = 0; i < asset_count; ++i){
+        for(int j = 0; j < shapes[i].getNeff(); j++){
+			Line new_line = Line(Point(shapes[i].getLineAt(j).getP1().getAbsis()*size_comparison, shapes[i].getLineAt(j).getP1().getOrdinat()*size_comparison), Point(shapes[i].getLineAt(j).getP2().getAbsis()*size_comparison, shapes[i].getLineAt(j).getP2().getOrdinat()*size_comparison));
+			shapes[i].setLineAt(j, new_line);
+		}
+    }
+}
+
 void Render::skala(int s){
 	int original_x_finish = screen.getXRes() -10;
 	int original_y_finish = screen.getYRes() -10;
@@ -282,7 +291,6 @@ void Render::skala(int s){
 		int basic_length = original_x_finish -10;
 		int basic_height = original_y_finish -10;
 		float size_comparison = (float) (y_new - P_start.getOrdinat()) / (float) basic_height;
-
 		// Getting and validating new finish point absis
 		int x_new = P_start.getAbsis() + round(size_comparison * basic_length);
 		if (x_new > original_x_finish) {
@@ -293,10 +301,60 @@ void Render::skala(int s){
 			P_finish.setAbsis(x_new);
 			P_finish.setOrdinat(y_new);
 
-			// NANTI DI SINI UPDATE SEMUA ELEMEN
-
 			clearScreen();
+
+			// DI SINI UPDATE SEMUA ELEMEN
+			skala_elements(size_comparison);
 			bingkai();
+			for(int i = 0; i < asset_count; ++i){
+				drawAsset(i, 50, 50);
+			}
+		}
+	}
+}
+
+void Render::translate(int h, int v){
+	// Getting and validating new horizontal position
+	int x_start_new = P_start.getAbsis() + h;
+	int x_finish_new = P_finish.getAbsis() + h;
+	if (x_start_new < 10) {
+		x_start_new = 10;
+		x_finish_new = P_finish.getAbsis() + (x_start_new - P_start.getAbsis());
+	}
+	else if (x_finish_new > screen.getXRes()-10){
+		x_finish_new = screen.getXRes()-10;
+		x_start_new = P_start.getAbsis() + (x_finish_new - P_finish.getAbsis());
+	}
+
+	// Getting and validating new vertical position
+	int y_start_new = P_start.getOrdinat() + v;
+	int y_finish_new = P_finish.getOrdinat() + v;
+	if (y_start_new < 10) {
+		y_start_new = 10;
+		y_finish_new = P_finish.getOrdinat() + (y_start_new - P_start.getOrdinat());
+	}
+	else if (y_finish_new > screen.getYRes()-10){
+		y_finish_new = screen.getYRes()-10;
+		y_start_new = P_start.getOrdinat() + (y_finish_new - P_finish.getOrdinat());
+	}
+
+	if ((x_start_new == P_start.getAbsis()) && (y_start_new == P_start.getOrdinat())) {
+		// do nothing
+		// because the position is the same as before
+		// std::cout<<x_start_new << " " << y_start_new <<std::endl<<"\r";
+	}
+	else {
+		P_start.setAbsis(x_start_new);
+		P_start.setOrdinat(y_start_new);
+		P_finish.setAbsis(x_finish_new);
+		P_finish.setOrdinat(y_finish_new);
+
+		// NANTI DI SINI UPDATE SEMUA ELEMEN
+
+		clearScreen();
+		bingkai();
+		for(int i = 0; i < asset_count; ++i){
+			drawAsset(i, 50, 50);
 		}
 	}
 }
@@ -304,18 +362,30 @@ void Render::skala(int s){
 void Render::map(){
 	clearScreen();
 	bingkai();
+	for(int i = 0; i < asset_count; ++i){
+        drawAsset(i, 50, 50);
+    }
 	for(;;){
         if(terminal.getIsInput() == (int)State::RECEIVED){
 			char input = terminal.getInput();
             switch (input){
-				case 'B': // down
-					
+				case 'w': // up
+					translate(0, -10);
 					break;
-                case 'C': // right
-					skala(+10);
+                case 'a': // left
+					translate(-10, 0);
                     break;
-                case 'D': // left
+                case 's': // down
+					translate(0, 10);
+                    break;
+				case 'd': // right
+					translate(10, 0);
+                    break;
+				case 'i': // smaller
 					skala(-10);
+                    break;
+				case 'o': // bigger
+					skala(+10);
                     break;
                 default:
                     break;
