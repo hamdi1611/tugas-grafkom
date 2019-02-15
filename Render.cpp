@@ -145,12 +145,12 @@ void Render::loadAsset(char *filename){
 		fscanf(fp, "%d", &b);
 		//std::cout << a << ", " << r << ", " << g << ", " << b << std::endl << "\r";
 		Color Outline(a, r, g, b);
-		fscanf(fp, "%d", &a);
-		fscanf(fp, "%d", &r);
-		fscanf(fp, "%d", &g);
-		fscanf(fp, "%d", &b);
+		// fscanf(fp, "%d", &a);
+		// fscanf(fp, "%d", &r);
+		// fscanf(fp, "%d", &g);
+		// fscanf(fp, "%d", &b);
 		//std::cout << a << ", " << r << ", " << g << ", " << b << std::endl << "\r";
-		Color C(a, r, g, b);
+		// Color C(a, r, g, b);
 		if(asset_type == 'S'){
 			int x0, x1, y0, y1;
 			shapes[asset_count].setAmount(line_count);
@@ -162,7 +162,7 @@ void Render::loadAsset(char *filename){
 				//std::cout << x0 << ", " << y0 << ", " << x1 << ", " << y1 << std::endl << "\r";
 				shapes[asset_count].addLine(Line(Point(x0, y0), Point(x1, y1)));
 			}
-			fills[asset_count] = C;
+			// fills[asset_count] = C;
 			outlines[asset_count] = Outline;
 		}
 		asset_count++;
@@ -192,44 +192,44 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 	Line L1(P1, P2);
 	//std::cout << L.getP1().getAbsis() << ", " << L.getP1().getOrdinat() << std::endl << "\r";
 	//std::cout << L.getP2().getAbsis() << ", " << L.getP2().getOrdinat() << std::endl << "\r";
-	for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
-		bool inside = false;
-		int meetLine = 0;
-		for(int x = L.getP1().getAbsis()+x_start; x < L.getP2().getAbsis()+x_start && x < screen.getXRes(); ++x){
-			if(meetLine == 1){
-				inside = true;
-			}
-			if(screen.getColorDepth() == 16){
-				// x * 2 as every pixel is 2 consecutive bytes
-				unsigned int pix_offset = (x + offset_x) * 2 + (y + offset_y) * screen.getLineLength();
-				unsigned short out_color = ((Outline.getRed() / 8) * 2048) + ((Outline.getGreen() / 4) * 32) + (Outline.getBlue() / 8);
-				if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) == out_color){
-					meetLine++;
-				}
-			}
-			else if(screen.getColorDepth() == 24){
-				// x * 3 as every pixel is 3 consecutive bytes
-				unsigned int pix_offset = (x + offset_x) * 3 + (y + offset_y) * screen.getLineLength();
-				if(*((char*)(screen.getFrameBuffer() + pix_offset)) == Outline.getBlue() && *((char*)(screen.getFrameBuffer() + pix_offset + 1)) == Outline.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) == Outline.getRed()){
-					meetLine++;
-				}
-			}
-			else if(screen.getColorDepth() == 32){
-				// x * 2 as every pixel is 4 consecutive bytes
-				unsigned int pix_offset = (x + offset_x) * 4 + (y + offset_y) * screen.getLineLength();
-				unsigned int out_color = (Outline.getAlpha() << 24) + (Outline.getRed() << 16) + (Outline.getGreen() << 8) + Outline.getBlue();
-				if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) == out_color){
-					meetLine++;
-				}
-			}
-			if(meetLine == 2){
-				break;
-			}
-			if(inside){
-				drawPoint(Point(x, y), C);
-			}
-		}
-	}
+// 	for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
+// 		bool inside = false;
+// 		int meetLine = 0;
+// 		for(int x = L.getP1().getAbsis()+x_start; x < L.getP2().getAbsis()+x_start && x < screen.getXRes(); ++x){
+// 			if(meetLine == 1){
+// 				inside = true;
+// 			}
+// 			if(screen.getColorDepth() == 16){
+// 				// x * 2 as every pixel is 2 consecutive bytes
+// 				unsigned int pix_offset = (x + offset_x) * 2 + (y + offset_y) * screen.getLineLength();
+// 				unsigned short out_color = ((Outline.getRed() / 8) * 2048) + ((Outline.getGreen() / 4) * 32) + (Outline.getBlue() / 8);
+// 				if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) == out_color){
+// 					meetLine++;
+// 				}
+// 			}
+// 			else if(screen.getColorDepth() == 24){
+// 				// x * 3 as every pixel is 3 consecutive bytes
+// 				unsigned int pix_offset = (x + offset_x) * 3 + (y + offset_y) * screen.getLineLength();
+// 				if(*((char*)(screen.getFrameBuffer() + pix_offset)) == Outline.getBlue() && *((char*)(screen.getFrameBuffer() + pix_offset + 1)) == Outline.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) == Outline.getRed()){
+// 					meetLine++;
+// 				}
+// 			}
+// 			else if(screen.getColorDepth() == 32){
+// 				// x * 2 as every pixel is 4 consecutive bytes
+// 				unsigned int pix_offset = (x + offset_x) * 4 + (y + offset_y) * screen.getLineLength();
+// 				unsigned int out_color = (Outline.getAlpha() << 24) + (Outline.getRed() << 16) + (Outline.getGreen() << 8) + Outline.getBlue();
+// 				if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) == out_color){
+// 					meetLine++;
+// 				}
+// 			}
+// 			if(meetLine == 2){
+// 				break;
+// 			}
+// 			if(inside){
+// 				drawPoint(Point(x, y), C);
+// 			}
+// 		}
+// 	}
 }
 
 void Render::drawEmptyShape(Shape S, Color Outline){
@@ -248,8 +248,8 @@ void Render::clearArea(int x, int x_size, int y, int y_size){
 }
 
 void Render::bingkai(){
-	Color c = Color(0, 0, 0, 255);
-	int pad = 3;
+	Color c = Color(0, 255, 255, 255);
+	int pad = 0;
 
 	Point P1 = Point(P_start.getAbsis()-pad,P_start.getOrdinat()-pad);
 	Point P2 = Point(P_finish.getAbsis()+pad,P_start.getOrdinat()-pad);

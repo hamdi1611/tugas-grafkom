@@ -5,7 +5,7 @@ int main(){
     Canvas screen;
     Render R;
     
-    R.loadAsset("peluru.txt");
+    R.loadAsset("map.txt");
     
     R.map();
 
