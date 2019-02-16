@@ -32,6 +32,8 @@ class Line {
         void moveRightP2(int x);        /* Move Second Point to Right */
         void moveUpP2(int y);           /* Move Second Point to Up */
         void moveDownP2(int y);         /* Move Second Point to Down */
+        
+        void rotateLine(Point P, float degree);     /*Rotate First and Second Point counter clockwise*/
 };
 
 #endif

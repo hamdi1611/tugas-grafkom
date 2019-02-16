@@ -23,12 +23,12 @@ Line::Line(const Line &L) {
 
 
 /**& getter and Setter **/
-Point Line::getP1() const {
+Point Line::getP1() const{
 /*& get First Point */
     return this->P1;
 }
 
-Point Line::getP2() const {
+Point Line::getP2() const{
 /*& get Second Point */
     return this->P2;
 }
@@ -83,4 +83,9 @@ void Line::moveUpP2(int y) {
 void Line::moveDownP2(int y) {
 /* Move Second Point to Down */
     this->P1.addOrdinat(y);
+}
+
+void Line::rotateLine(Point P, float degree){
+    this->P1.rotatePoint(P, degree);
+    this->P2.rotatePoint(P, degree);
 }

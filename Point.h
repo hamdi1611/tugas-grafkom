@@ -24,6 +24,7 @@ class Point {
         /* Function and Procedure */
         void addAbsis(unsigned int x);
         void addOrdinat(unsigned int y);
+        void rotatePoint(Point P, float degree);
         
         /* Operator Overloading */
         bool operator== (const Point &P) const;
