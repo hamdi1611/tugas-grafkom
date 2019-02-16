@@ -5,10 +5,8 @@ int main(){
     Canvas screen;
     Render R;
     
-    R.loadAsset("peluru.txt");
-    R.loadAsset("ship.txt");
-    R.loadAsset("plane.txt");
-
+    R.loadAsset("map.txt");
+    
     R.map();
 
     return 0;

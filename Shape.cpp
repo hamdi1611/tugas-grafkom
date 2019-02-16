@@ -27,7 +27,7 @@ Shape::Shape(unsigned int amount) {
     this->neff = 0;
 }
 
-Shape::Shape(const Shape &shape) {
+Shape::Shape(Shape &shape) {
 /* Copy Constructor */
     this->amount = shape.getAmount();
     this->L = new Line[this->amount];
@@ -56,7 +56,7 @@ void Shape::setAmount(int amount) {
     this->amount = amount;
 }
 
-Line Shape::getLineAt(unsigned int idx) const {
+Line Shape::getLineAt(unsigned int idx) {
     /* The index start from 0, not 1 */
     // Only allowed to set when it is already allocated
     if (idx < this->neff)
