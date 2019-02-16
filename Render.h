@@ -44,6 +44,7 @@ class Render {
 		void translate_elements(int h, int v);
 		void translate(int h, int v);
 		void map();
+		void doRotate();
 		void drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_start);
 		void drawEmptyShape(Shape S, Color Outline);
 		void clearScreen();	

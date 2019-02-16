@@ -1,6 +1,6 @@
 /*  Point.cpp  */
 
-#include <math.h>
+#include <cmath>
 #include "Point.h"
 
 /** Operator Empat Sekawan **/
@@ -24,11 +24,11 @@ Point::Point(const Point &P) {
 
 
 /**& getter and Setter **/
-unsigned int Point::getAbsis() const {
+int Point::getAbsis() const {
     return this->x;
 }
 
-unsigned int Point::getOrdinat() const {
+int Point::getOrdinat() const {
     return this->y;
 }
 
@@ -50,16 +50,20 @@ void Point::addOrdinat(unsigned int y) {
 }
 
 void Point::rotatePoint(Point P, float degree){
-    int a = (int) (this->getAbsis() - (int) P.getAbsis()) * cos(degree/180 * M_PI);
-    int b = (int) (this -> getOrdinat() - (int) P.getOrdinat()) * sin(degree/180 * M_PI);
-    int c = (int) (this->getAbsis() - (int) P.getAbsis()) * sin(degree/180 * M_PI);
-    int d = (int) (this->getOrdinat() - (int) P.getOrdinat()) * cos(degree/180 * M_PI);
+    float s = sin(degree / 180 * M_PI);
+    float c = cos(degree / 180 * M_PI);
 
-    int x = floor(a - b + P.getAbsis());
-    int y = floor(c + d + P.getOrdinat());
+    // translate point back to origin:
+    this->x -= P.x;
+    this->y -= P.y;
 
-    this -> setAbsis(x);
-    this -> setOrdinat(y);
+    // rotate point
+    int xnew = (int)round(this->x * c - this->y * s);
+    int ynew = (int)round(this->x * s + this->y * c);
+
+    // translate point back:
+    this->x = xnew + P.x;
+    this->y = ynew + P.y;
 }
 
 /** Operator Overloading **/

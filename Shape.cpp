@@ -123,3 +123,9 @@ bool Shape::isClosed() const {
     
     return CLOSED;
 }
+
+void Shape::rotateShape(Point P, float degree){
+    for(int i = 0; i < neff; ++i){
+        this->L[i].rotateLine(P, degree);
+    }
+}

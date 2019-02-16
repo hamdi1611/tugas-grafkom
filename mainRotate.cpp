@@ -4,9 +4,8 @@
 int main(){
     Render R;
     
-    R.loadAsset("map.txt");
-    
-    R.map();
+    R.loadAsset("peluru.txt");
+    R.doRotate();
 
     return 0;
 }

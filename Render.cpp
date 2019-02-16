@@ -186,10 +186,10 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 
 		drawLine(Line(P_1, P_2), Outline);
 	}
-	Line L = S.getExtremeLine();
-	Point P1(0, 0);
-	Point P2(700, 700);
-	Line L1(P1, P2);
+	// Line L = S.getExtremeLine();
+	// Point P1(0, 0);
+	// Point P2(700, 700);
+	// Line L1(P1, P2);
 	//std::cout << L.getP1().getAbsis() << ", " << L.getP1().getOrdinat() << std::endl << "\r";
 	//std::cout << L.getP2().getAbsis() << ", " << L.getP2().getOrdinat() << std::endl << "\r";
 // 	for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
@@ -502,4 +502,41 @@ Input& Render::getTerminal(){
 
 Color Render::getBGColor(){
 	return BACKGROUND;
+}
+
+void Render::doRotate(){
+	float degree = 10;
+	clearScreen();
+	for(int i = 0; i < asset_count; ++i){
+		drawAsset(i, 0, 0);
+	}
+	Point P(30, 30);
+	for(;;){
+		if(terminal.getIsInput() == (int)State::RECEIVED){
+			char input = terminal.getInput();
+            switch (input)
+            {
+				case 'a':
+					degree = 10;
+					break;
+                case 'd':
+                    degree = -10;
+                    break;
+                default:
+                    break;
+            }
+            for(int i = 0; i < asset_count; ++i){
+				shapes[i].rotateShape(P, degree);
+			}
+			clearScreen();
+			for(int i = 0; i < asset_count; ++i){
+				drawAsset(i, 0, 0);
+			}
+            terminal.setIsInput(State::WAITING);
+        }
+        else if(terminal.getIsInput() == (int)State::STOP){
+            terminal.exit();
+            break;
+        }
+	}
 }
