@@ -2,7 +2,6 @@
 #include "Render.h"
 
 int main(){
-    Canvas screen;
     Render R;
     
     R.loadAsset("map.txt");

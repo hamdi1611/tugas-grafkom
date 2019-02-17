@@ -5,8 +5,8 @@
 
 class Point {
     private:
-        unsigned int x;  // Absis
-        unsigned int y;  // Ordinat
+        int x;  // Absis
+        int y;  // Ordinat
 
     public:
         /* Operator Empat Sekawan */
@@ -15,8 +15,8 @@ class Point {
         Point(const Point &P);
 
         /*& getter and Setter */
-        unsigned int getAbsis() const;
-        unsigned int getOrdinat() const;
+        int getAbsis() const;
+        int getOrdinat() const;
         
         void setAbsis(unsigned int x);
         void setOrdinat(unsigned int y);

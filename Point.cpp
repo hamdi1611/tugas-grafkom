@@ -1,6 +1,6 @@
 /*  Point.cpp  */
 
-#include <math.h>
+#include <cmath>
 #include "Point.h"
 
 /** Operator Empat Sekawan **/
@@ -24,11 +24,11 @@ Point::Point(const Point &P) {
 
 
 /**& getter and Setter **/
-unsigned int Point::getAbsis() const {
+int Point::getAbsis() const {
     return this->x;
 }
 
-unsigned int Point::getOrdinat() const {
+int Point::getOrdinat() const {
     return this->y;
 }
 
@@ -58,8 +58,8 @@ void Point::rotatePoint(Point P, float degree){
     int x = floor(a - b + (int)P.getAbsis());
     int y = floor(c + d + (int)P.getOrdinat());
 
-    this -> setAbsis(x);
-    this -> setOrdinat(y);
+    this->setAbsis(x);
+    this->setOrdinat(y);
 }
 
 /** Operator Overloading **/
