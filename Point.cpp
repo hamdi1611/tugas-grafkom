@@ -50,13 +50,13 @@ void Point::addOrdinat(unsigned int y) {
 }
 
 void Point::rotatePoint(Point P, float degree){
-    int a = (int) (this->getAbsis() - (int) P.getAbsis()) * cos(degree/180 * M_PI);
-    int b = (int) (this -> getOrdinat() - (int) P.getOrdinat()) * sin(degree/180 * M_PI);
-    int c = (int) (this->getAbsis() - (int) P.getAbsis()) * sin(degree/180 * M_PI);
-    int d = (int) (this->getOrdinat() - (int) P.getOrdinat()) * cos(degree/180 * M_PI);
+    int a = round(((int) this->getAbsis() - (int) P.getAbsis()) * cos(degree/180 * M_PI));
+    int b = round(((int) this -> getOrdinat() - (int) P.getOrdinat()) * sin(degree/180 * M_PI));
+    int c = round(((int) this->getAbsis() - (int) P.getAbsis()) * sin(degree/180 * M_PI));
+    int d = round(((int) this->getOrdinat() - (int) P.getOrdinat()) * cos(degree/180 * M_PI));
 
-    int x = floor(a - b + P.getAbsis());
-    int y = floor(c + d + P.getOrdinat());
+    int x = floor(a - b + (int)P.getAbsis());
+    int y = floor(c + d + (int)P.getOrdinat());
 
     this -> setAbsis(x);
     this -> setOrdinat(y);

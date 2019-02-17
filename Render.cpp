@@ -430,6 +430,37 @@ void Render::map(){
     }
 }
 
+void Render::heli(){
+	int coor_x = 850;
+	Point P(230, 230);
+	for(;;){
+		clearScreen();
+		for(int i = 0; i < 4; ++i){
+				shapes[i].rotate(P, 20.0);
+		}
+		for(int i = 0; i < asset_count; ++i){
+			drawAsset(i, coor_x, screen.getYRes()/4);
+		}
+		for (int i = 0; i < 900000; i++) {}
+
+		if (coor_x >= 5) {
+			coor_x -= 1;
+		}
+		else {
+			coor_x = 850;
+		}
+
+        if(terminal.getIsInput() == (int)State::RECEIVED){
+			char input = terminal.getInput();
+            terminal.setIsInput(State::WAITING);
+        }
+        else if(terminal.getIsInput() == (int)State::STOP){
+            terminal.exit();
+            break;
+        }
+    }
+}
+
 void Render::doMotion(){
 	clearScreen();
 	int x_ship = screen.getXRes() / 3, y_ship = screen.getYRes() / 2, x_plane = screen.getXRes() - 300, y_plane = screen.getYRes() / 8;

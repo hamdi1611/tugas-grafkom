@@ -29,6 +29,7 @@ class Shape {
         /* Function and Procedure */
         void addLine(Line line);
         bool isClosed() const;
+        void rotate(Point P, float degree);
 };
 
 #endif
