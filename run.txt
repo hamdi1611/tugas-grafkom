@@ -1,7 +1,5 @@
 g++ -Wall main.cpp -o a Point.cpp Render.cpp Canvas.cpp Line.cpp  Input.cpp Color.cpp Shape.cpp -lpthread -w
-<<<<<<< HEAD
 
 g++ -Wall rotasi.cpp -o b Point.cpp Render.cpp Canvas.cpp Line.cpp  Input.cpp Color.cpp Shape.cpp -lpthread -w
-=======
+
 g++ -Wall mainRotate.cpp -o r Point.cpp Render.cpp Canvas.cpp Line.cpp  Input.cpp Color.cpp Shape.cpp -lpthread -w
->>>>>>> 8fe7f4e652a208dfb1ca85a39842bfbecf214a39

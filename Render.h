@@ -24,7 +24,6 @@ class Render {
 		void drawLineLow(int x0, int y0, int x1, int y1, Color C);
 		void drawLineHigh(int x0, int y0, int x1, int y1, Color C);
 	public:
-		int offset_x = 0, offset_y = 0; 
 		/* Operator Empat Sekawan */
 		Render();
 		Render(const Render &R);
