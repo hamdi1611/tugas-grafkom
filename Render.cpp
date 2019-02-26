@@ -27,11 +27,26 @@ int& Render::getAssetCount() {
 }
 
 void Render::drawPoint(Point P, Color C){
-	if(P.getAbsis() + offset_x >= screen.getXRes() || P.getAbsis() - offset_x < 0 || P.getOrdinat() + offset_y >= screen.getYRes() || P.getOrdinat() - offset_y < 0)
+	int x = P.getAbsis();
+	int y = P.getOrdinat();
+	if(x < 0){
+		x = 0;
+	}
+	else if(x >= screen.getXRes()){
+		x = screen.getXRes() - 1;
+	}
+	if(y < 0){
+		y = 0;
+	}
+	else if(y >= screen.getYRes()){
+		y = screen.getYRes() - 1;
+	}
+	
+	if(x >= screen.getXRes() || x < 0 || y >= screen.getYRes() || y < 0)
 		return;
 	if(screen.getColorDepth() == 16){
 		// x * 2 as every pixel is 2 consecutive bytes
-		unsigned int pix_offset = (P.getAbsis() + offset_x) * 2 + (P.getOrdinat() + offset_y) * screen.getLineLength();
+		unsigned int pix_offset = x * 2 + y * screen.getLineLength();
 		//unsigned short c = ((r / 8) << 11) + ((g / 4) << 5) + (b / 8);
 		unsigned short color = ((C.getRed() / 8) * 2048) + ((C.getGreen() / 4) * 32) + (C.getBlue() / 8);
 		// write 2 bytes at once
@@ -41,7 +56,7 @@ void Render::drawPoint(Point P, Color C){
 	}
 	else if(screen.getColorDepth() == 24){
 		// x * 3 as every pixel is 3 consecutive bytes
-		unsigned int pix_offset = (P.getAbsis() + offset_x) * 3 + (P.getOrdinat() + offset_y) * screen.getLineLength();
+		unsigned int pix_offset = x * 3 + y * screen.getLineLength();
 		// now this is about the same as 'fbp[pix_offset] = value'
 		if(*((char*)(screen.getFrameBuffer() + pix_offset)) != C.getBlue() || *((char*)(screen.getFrameBuffer() + pix_offset + 1)) != C.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) != C.getRed()){
 			*((char*)(screen.getFrameBuffer() + pix_offset)) = C.getBlue();
@@ -51,7 +66,7 @@ void Render::drawPoint(Point P, Color C){
 	}
 	else if(screen.getColorDepth() == 32){
 		 // x * 2 as every pixel is 2 consecutive bytes
-		unsigned int pix_offset = (P.getAbsis() + offset_x) * 4 + (P.getOrdinat() + offset_y) * screen.getLineLength();
+		unsigned int pix_offset = x * 4 + y * screen.getLineLength();
 		unsigned int color = (C.getAlpha() << 24) + (C.getRed() << 16) + (C.getGreen() << 8) + C.getBlue();
 		// write 4 bytes at once
 		if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) != color){
@@ -201,7 +216,7 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 // 			}
 // 			if(screen.getColorDepth() == 16){
 // 				// x * 2 as every pixel is 2 consecutive bytes
-// 				unsigned int pix_offset = (x + offset_x) * 2 + (y + offset_y) * screen.getLineLength();
+// 				unsigned int pix_offset = (x + ) * 2 + (y + ) * screen.getLineLength();
 // 				unsigned short out_color = ((Outline.getRed() / 8) * 2048) + ((Outline.getGreen() / 4) * 32) + (Outline.getBlue() / 8);
 // 				if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) == out_color){
 // 					meetLine++;
@@ -209,14 +224,14 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 // 			}
 // 			else if(screen.getColorDepth() == 24){
 // 				// x * 3 as every pixel is 3 consecutive bytes
-// 				unsigned int pix_offset = (x + offset_x) * 3 + (y + offset_y) * screen.getLineLength();
+// 				unsigned int pix_offset = (x + ) * 3 + (y + ) * screen.getLineLength();
 // 				if(*((char*)(screen.getFrameBuffer() + pix_offset)) == Outline.getBlue() && *((char*)(screen.getFrameBuffer() + pix_offset + 1)) == Outline.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) == Outline.getRed()){
 // 					meetLine++;
 // 				}
 // 			}
 // 			else if(screen.getColorDepth() == 32){
 // 				// x * 2 as every pixel is 4 consecutive bytes
-// 				unsigned int pix_offset = (x + offset_x) * 4 + (y + offset_y) * screen.getLineLength();
+// 				unsigned int pix_offset = (x + ) * 4 + (y + ) * screen.getLineLength();
 // 				unsigned int out_color = (Outline.getAlpha() << 24) + (Outline.getRed() << 16) + (Outline.getGreen() << 8) + Outline.getBlue();
 // 				if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) == out_color){
 // 					meetLine++;
