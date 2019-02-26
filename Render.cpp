@@ -196,62 +196,60 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 	/* if(!S.isClosed()){
 		return;
 	} */
-	for(int i = 0; i < S.getNeff(); ++i){
-		Point P_1(S.getLineAt(i).getP1().getAbsis()+x_start, S.getLineAt(i).getP1().getOrdinat()+y_start);
-		Point P_2(S.getLineAt(i).getP2().getAbsis()+x_start, S.getLineAt(i).getP2().getOrdinat()+y_start);
-
-		drawLine(Line(P_1, P_2), Outline);
-	}
 	Line L = S.getExtremeLine();
-	// Point P1(0, 0);
-	// Point P2(700, 700);
-	// Line L1(P1, P2);
-	//std::cout << L.getP1().getAbsis() << ", " << L.getP1().getOrdinat() << std::endl << "\r";
-	//std::cout << L.getP2().getAbsis() << ", " << L.getP2().getOrdinat() << std::endl << "\r";
-	for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
-		bool inside = false;
-		int meetLine = 0;
-		for(int x = L.getP1().getAbsis()+x_start; x < L.getP2().getAbsis()+x_start && x < screen.getXRes(); ++x){
-			if(x > screen.getXRes()-10 || x < 10 || y > screen.getYRes()-10 || y < 10){
-				// do nothing
+			// drawing line
+			for(int i = 0; i < S.getNeff(); ++i){
+				Point P_1(S.getLineAt(i).getP1().getAbsis()+x_start, S.getLineAt(i).getP1().getOrdinat()+y_start);
+				Point P_2(S.getLineAt(i).getP2().getAbsis()+x_start, S.getLineAt(i).getP2().getOrdinat()+y_start);
+
+				drawLine(Line(P_1, P_2), Outline);
 			}
-			else
-			{
-				if(meetLine == 1){
-					inside = true;
+
+			// color filling
+			for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
+			bool inside = false;
+			int meetLine = 0;
+			for(int x = L.getP1().getAbsis()+x_start; x < L.getP2().getAbsis()+x_start && x < screen.getXRes(); ++x){
+				if(x > screen.getXRes()-10 || x < 10 || y > screen.getYRes()-10 || y < 10){
+					// do nothing because this point is out of the view
 				}
-				if(screen.getColorDepth() == 16){
-					// x * 2 as every pixel is 2 consecutive bytes
-					unsigned int pix_offset = (x + 0) * 2 + (y + 0) * screen.getLineLength();
-					unsigned short out_color = ((Outline.getRed() / 8) * 2048) + ((Outline.getGreen() / 4) * 32) + (Outline.getBlue() / 8);
-					if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) == out_color){
-						meetLine++;
+				else
+				{
+					if(meetLine == 1){
+						inside = true;
 					}
-				}
-				else if(screen.getColorDepth() == 24){
-					// x * 3 as every pixel is 3 consecutive bytes
-					unsigned int pix_offset = (x + 0) * 3 + (y + 0) * screen.getLineLength();
-					if(*((char*)(screen.getFrameBuffer() + pix_offset)) == Outline.getBlue() && *((char*)(screen.getFrameBuffer() + pix_offset + 1)) == Outline.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) == Outline.getRed()){
-						meetLine++;
+					if(screen.getColorDepth() == 16){
+						// x * 2 as every pixel is 2 consecutive bytes
+						unsigned int pix_offset = (x + 0) * 2 + (y + 0) * screen.getLineLength();
+						unsigned short out_color = ((Outline.getRed() / 8) * 2048) + ((Outline.getGreen() / 4) * 32) + (Outline.getBlue() / 8);
+						if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) == out_color){
+							meetLine++;
+						}
 					}
-				}
-				else if(screen.getColorDepth() == 32){
-					// x * 2 as every pixel is 4 consecutive bytes
-					unsigned int pix_offset = (x + 0) * 4 + (y + 0) * screen.getLineLength();
-					unsigned int out_color = (Outline.getAlpha() << 24) + (Outline.getRed() << 16) + (Outline.getGreen() << 8) + Outline.getBlue();
-					if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) == out_color){
-						meetLine++;
+					else if(screen.getColorDepth() == 24){
+						// x * 3 as every pixel is 3 consecutive bytes
+						unsigned int pix_offset = (x + 0) * 3 + (y + 0) * screen.getLineLength();
+						if(*((char*)(screen.getFrameBuffer() + pix_offset)) == Outline.getBlue() && *((char*)(screen.getFrameBuffer() + pix_offset + 1)) == Outline.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) == Outline.getRed()){
+							meetLine++;
+						}
 					}
-				}
-				if(meetLine == 2){
-					break;
-				}
-				if(inside){
-					drawPoint(Point(x, y), C);
+					else if(screen.getColorDepth() == 32){
+						// x * 2 as every pixel is 4 consecutive bytes
+						unsigned int pix_offset = (x + 0) * 4 + (y + 0) * screen.getLineLength();
+						unsigned int out_color = (Outline.getAlpha() << 24) + (Outline.getRed() << 16) + (Outline.getGreen() << 8) + Outline.getBlue();
+						if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) == out_color){
+							meetLine++;
+						}
+					}
+					if(meetLine == 2){
+						break;
+					}
+					if(inside){
+						drawPoint(Point(x, y), C);
+					}
 				}
 			}
 		}
-	}
 }
 
 void Render::drawEmptyShape(Shape S, Color Outline){
@@ -325,7 +323,13 @@ int Render::skala(int before, int after){
 		skala_elements(before, after);
 		bingkai();
 		for(int i = 0; i < asset_count; i++){
-			drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
+			Line L = shapes[i].getExtremeLine();
+			if (L.getP1().getAbsis()+P_start.getAbsis() >= screen.getXRes()-10 || L.getP2().getAbsis()+P_start.getAbsis() <= 10 || L.getP1().getOrdinat()+P_start.getOrdinat() >= screen.getYRes()-10 || L.getP2().getOrdinat()+P_start.getOrdinat() <= 10) {
+				// do nothing because the shape is out of the view
+			}
+			else {
+				drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
+			}
 		}
 		return 0;
 	}
@@ -391,7 +395,13 @@ void Render::translate(int h, int v){
 		// translate_elements(h, v);
 		bingkai();
 		for(int i = 0; i < asset_count; i++){
-			drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
+			Line L = shapes[i].getExtremeLine();
+			if (L.getP1().getAbsis()+P_start.getAbsis() >= screen.getXRes()-10 || L.getP2().getAbsis()+P_start.getAbsis() <= 10 || L.getP1().getOrdinat()+P_start.getOrdinat() >= screen.getYRes()-10 || L.getP2().getOrdinat()+P_start.getOrdinat() <= 10) {
+				// do nothing because the shape is out of the view
+			}
+			else {
+				drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
+			}
 		}
 	}
 }
