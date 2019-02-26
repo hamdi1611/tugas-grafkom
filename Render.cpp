@@ -27,7 +27,7 @@ int& Render::getAssetCount() {
 }
 
 void Render::drawPoint(Point P, Color C){
-	if(P.getAbsis() + offset_x >= screen.getXRes() || P.getAbsis() - offset_x < 0 || P.getOrdinat() + offset_y >= screen.getYRes() || P.getOrdinat() - offset_y < 0)
+	if(P.getAbsis() + offset_x >= screen.getXRes()-10 || P.getAbsis() - offset_x < 10 || P.getOrdinat() + offset_y >= screen.getYRes()-10 || P.getOrdinat() - offset_y < 10)
 		return;
 	if(screen.getColorDepth() == 16){
 		// x * 2 as every pixel is 2 consecutive bytes
@@ -186,50 +186,6 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 
 		drawLine(Line(P_1, P_2), Outline);
 	}
-	// Line L = S.getExtremeLine();
-	// Point P1(0, 0);
-	// Point P2(700, 700);
-	// Line L1(P1, P2);
-	//std::cout << L.getP1().getAbsis() << ", " << L.getP1().getOrdinat() << std::endl << "\r";
-	//std::cout << L.getP2().getAbsis() << ", " << L.getP2().getOrdinat() << std::endl << "\r";
-// 	for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
-// 		bool inside = false;
-// 		int meetLine = 0;
-// 		for(int x = L.getP1().getAbsis()+x_start; x < L.getP2().getAbsis()+x_start && x < screen.getXRes(); ++x){
-// 			if(meetLine == 1){
-// 				inside = true;
-// 			}
-// 			if(screen.getColorDepth() == 16){
-// 				// x * 2 as every pixel is 2 consecutive bytes
-// 				unsigned int pix_offset = (x + offset_x) * 2 + (y + offset_y) * screen.getLineLength();
-// 				unsigned short out_color = ((Outline.getRed() / 8) * 2048) + ((Outline.getGreen() / 4) * 32) + (Outline.getBlue() / 8);
-// 				if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) == out_color){
-// 					meetLine++;
-// 				}
-// 			}
-// 			else if(screen.getColorDepth() == 24){
-// 				// x * 3 as every pixel is 3 consecutive bytes
-// 				unsigned int pix_offset = (x + offset_x) * 3 + (y + offset_y) * screen.getLineLength();
-// 				if(*((char*)(screen.getFrameBuffer() + pix_offset)) == Outline.getBlue() && *((char*)(screen.getFrameBuffer() + pix_offset + 1)) == Outline.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) == Outline.getRed()){
-// 					meetLine++;
-// 				}
-// 			}
-// 			else if(screen.getColorDepth() == 32){
-// 				// x * 2 as every pixel is 4 consecutive bytes
-// 				unsigned int pix_offset = (x + offset_x) * 4 + (y + offset_y) * screen.getLineLength();
-// 				unsigned int out_color = (Outline.getAlpha() << 24) + (Outline.getRed() << 16) + (Outline.getGreen() << 8) + Outline.getBlue();
-// 				if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) == out_color){
-// 					meetLine++;
-// 				}
-// 			}
-// 			if(meetLine == 2){
-// 				break;
-// 			}
-// 			if(inside){
-// 				drawPoint(Point(x, y), C);
-// 			}
-// 		}
-// 	}
 }
 
 void Render::drawEmptyShape(Shape S, Color Outline){
@@ -251,15 +207,15 @@ void Render::bingkai(){
 	Color c = Color(0, 255, 255, 255);
 	int pad = 0;
 
-	Point P1 = Point(P_start.getAbsis()-pad,P_start.getOrdinat()-pad);
-	Point P2 = Point(P_finish.getAbsis()+pad,P_start.getOrdinat()-pad);
-	Point P3 = Point(P_finish.getAbsis()+pad,P_finish.getOrdinat()+pad);
-	Point P4 = Point(P_start.getAbsis()-pad,P_finish.getOrdinat()+pad);
+	// Point P1 = Point(P_start.getAbsis()-pad,P_start.getOrdinat()-pad);
+	// Point P2 = Point(P_finish.getAbsis()+pad,P_start.getOrdinat()-pad);
+	// Point P3 = Point(P_finish.getAbsis()+pad,P_finish.getOrdinat()+pad);
+	// Point P4 = Point(P_start.getAbsis()-pad,P_finish.getOrdinat()+pad);
 
-	drawLine(Line(P1, P2), c);
-	drawLine(Line(P2, P3), c);
-	drawLine(Line(P3, P4), c);
-	drawLine(Line(P4, P1), c);
+	// drawLine(Line(P1, P2), c);
+	// drawLine(Line(P2, P3), c);
+	// drawLine(Line(P3, P4), c);
+	// drawLine(Line(P4, P1), c);
 }
 
 void Render::skala_elements(int before, int after){
@@ -288,7 +244,8 @@ int Render::skala(int before, int after){
 	// Getting and validating new finish point
 	int y_new = (P_finish.getOrdinat() - P_start.getOrdinat())/before*after + P_start.getOrdinat();
 	int x_new = (P_finish.getAbsis() - P_start.getAbsis())/before*after + P_start.getAbsis();
-	if ((y_new > original_y_finish) || (x_new > original_x_finish)) {
+	// if ((y_new > original_y_finish) || (x_new > original_x_finish)) {
+	if (0){
 		// do nothing
 		return 1;
 	}
@@ -329,26 +286,26 @@ void Render::translate(int h, int v){
 	// Getting and validating new horizontal position
 	int x_start_new = P_start.getAbsis() + h;
 	int x_finish_new = P_finish.getAbsis() + h;
-	if (x_start_new < 10) {
-		x_start_new = 10;
-		x_finish_new = P_finish.getAbsis() + (x_start_new - P_start.getAbsis());
-	}
-	else if (x_finish_new > screen.getXRes()-10){
-		x_finish_new = screen.getXRes()-10;
-		x_start_new = P_start.getAbsis() + (x_finish_new - P_finish.getAbsis());
-	}
+	// if (x_start_new < 10) {
+	// 	x_start_new = 10;
+	// 	x_finish_new = P_finish.getAbsis() + (x_start_new - P_start.getAbsis());
+	// }
+	// else if (x_finish_new > screen.getXRes()-10){
+	// 	x_finish_new = screen.getXRes()-10;
+	// 	x_start_new = P_start.getAbsis() + (x_finish_new - P_finish.getAbsis());
+	// }
 
 	// Getting and validating new vertical position
 	int y_start_new = P_start.getOrdinat() + v;
 	int y_finish_new = P_finish.getOrdinat() + v;
-	if (y_start_new < 10) {
-		y_start_new = 10;
-		y_finish_new = P_finish.getOrdinat() + (y_start_new - P_start.getOrdinat());
-	}
-	else if (y_finish_new > screen.getYRes()-10){
-		y_finish_new = screen.getYRes()-10;
-		y_start_new = P_start.getOrdinat() + (y_finish_new - P_finish.getOrdinat());
-	}
+	// if (y_start_new < 10) {
+	// 	y_start_new = 10;
+	// 	y_finish_new = P_finish.getOrdinat() + (y_start_new - P_start.getOrdinat());
+	// }
+	// else if (y_finish_new > screen.getYRes()-10){
+	// 	y_finish_new = screen.getYRes()-10;
+	// 	y_start_new = P_start.getOrdinat() + (y_finish_new - P_finish.getOrdinat());
+	// }
 
 	if ((x_start_new == P_start.getAbsis()) && (y_start_new == P_start.getOrdinat())) {
 		// do nothing
@@ -409,14 +366,15 @@ void Render::map(){
                     break;
 				case 'o': // bigger
 					s++;
-					if (s > 10) {
-						s = 10;
-					}
-					else {
-						if(skala(s-1, s)) {
-							s--;
-						}
-					}
+					skala(s-1, s);
+					// if (s > 10) {
+					// 	s = 10;
+					// }
+					// else {
+					// 	if(skala(s-1, s)) {
+					// 		s--;
+					// 	}
+					// }
                     break;
                 default:
                     break;
