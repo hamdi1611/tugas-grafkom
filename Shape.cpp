@@ -52,6 +52,10 @@ unsigned int Shape::getNeff() const {
     return this->neff;
 }
 
+void Shape::resetNeff() {
+    this->neff = 0;
+}
+
 void Shape::setAmount(int amount) {
     this->amount = amount;
 }

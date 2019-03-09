@@ -22,6 +22,7 @@ class Shape {
         /*& getter and Setter */
         unsigned int getAmount() const;
         unsigned int getNeff() const;
+        void resetNeff();
         void setAmount(int amount);
         Line getLineAt(unsigned int idx);
         void setLineAt(unsigned int idx, Line line);

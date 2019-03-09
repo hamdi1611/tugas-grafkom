@@ -30,18 +30,55 @@ void Render::drawPoint(Point P, Color C){
 	// if(P.getAbsis() + offset_x >= screen.getXRes()-10 || P.getAbsis() - offset_x < 10 || P.getOrdinat() + offset_y >= screen.getYRes()-10 || P.getOrdinat() - offset_y < 10)
 	int x = P.getAbsis();
 	int y = P.getOrdinat();
-	if(x < 10){
-		x = 10;
+	if(x < Pview.getAbsis()){
+		x = Pview.getAbsis();
 	}
 	else if(x > screen.getXRes()-10){
 		x = screen.getXRes() - 10;
 	}
-	if(y < 10){
-		y = 10;
+	if(y < Pview.getOrdinat()){
+		y = Pview.getOrdinat();
 	}
 	else if(y > screen.getYRes()-10){
 		y = screen.getYRes() - 10;
 	}
+	
+	if(x > screen.getXRes()-10 || x < 10 || y > screen.getYRes()-10 || y < 10)
+		return;
+	if(screen.getColorDepth() == 16){
+		// x * 2 as every pixel is 2 consecutive bytes
+		unsigned int pix_offset = x * 2 + y * screen.getLineLength();
+		//unsigned short c = ((r / 8) << 11) + ((g / 4) << 5) + (b / 8);
+		unsigned short color = ((C.getRed() / 8) * 2048) + ((C.getGreen() / 4) * 32) + (C.getBlue() / 8);
+		// write 2 bytes at once
+		if(*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) != color){
+			*((unsigned short*)(screen.getFrameBuffer() + pix_offset)) = color;
+		}
+	}
+	else if(screen.getColorDepth() == 24){
+		// x * 3 as every pixel is 3 consecutive bytes
+		unsigned int pix_offset = x * 3 + y * screen.getLineLength();
+		// now this is about the same as 'fbp[pix_offset] = value'
+		if(*((char*)(screen.getFrameBuffer() + pix_offset)) != C.getBlue() || *((char*)(screen.getFrameBuffer() + pix_offset + 1)) != C.getGreen() && *((char*)(screen.getFrameBuffer() + pix_offset + 2)) != C.getRed()){
+			*((char*)(screen.getFrameBuffer() + pix_offset)) = C.getBlue();
+			*((char*)(screen.getFrameBuffer() + pix_offset + 1)) = C.getGreen();
+			*((char*)(screen.getFrameBuffer() + pix_offset + 2)) = C.getRed();
+		}
+	}
+	else if(screen.getColorDepth() == 32){
+		 // x * 2 as every pixel is 2 consecutive bytes
+		unsigned int pix_offset = x * 4 + y * screen.getLineLength();
+		unsigned int color = (C.getAlpha() << 24) + (C.getRed() << 16) + (C.getGreen() << 8) + C.getBlue();
+		// write 4 bytes at once
+		if(*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) != color){
+			*((unsigned int*)(screen.getFrameBuffer() + pix_offset)) = color;
+		}
+	}
+}
+
+void Render::drawPointNoLimit(Point P, Color C){
+	int x = P.getAbsis();
+	int y = P.getOrdinat();
 	
 	if(x > screen.getXRes()-10 || x < 10 || y > screen.getYRes()-10 || y < 10)
 		return;
@@ -140,6 +177,69 @@ void Render::drawLine(Line L, Color C) {
 	}
 }
 
+void Render::drawLineLowNoLimit(int x0, int y0, int x1, int y1, Color C){
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+  	int yi = 1;
+  	if(dy < 0){
+		yi = -1;
+		dy = -1 * dy;
+	}
+  	int D = 2 * dy - dx;
+  	int y = y0;
+	for(int x = x0; x <= x1; ++x){
+		drawPointNoLimit(Point(x, y), C);
+		if(D > 0){
+			y = y + yi;
+			D = D - 2 * dx;
+		}
+		D = D + 2 * dy;
+	}
+}
+
+void Render::drawLineHighNoLimit(int x0, int y0, int x1, int y1, Color C){
+	int dx = x1 - x0;
+	int dy = y1 - y0;
+  	int xi = 1;
+  	if(dx < 0){
+		xi = -1;
+		dx = -1 * dx;
+	}
+  	int D = 2 * dx - dy;
+  	int x = x0;
+	for(int y = y0; y <= y1; ++y){
+		drawPointNoLimit(Point(x, y), C);
+		if(D > 0){
+			x = x + xi;
+			D = D - 2 * dy;
+		}
+		D = D + 2 * dx;
+	}
+}
+
+void Render::drawLineNoLimit(Line L, Color C) {
+	int x0 = L.getP1().getAbsis();
+	int x1 = L.getP2().getAbsis();
+	int y0 = L.getP1().getOrdinat();
+	int y1 = L.getP2().getOrdinat();
+	if(abs(y1 - y0) < abs(x1 - x0)){
+		if(x0 > x1){
+			drawLineLowNoLimit(x1, y1, x0, y0, C);
+		}
+		else{
+			drawLineLowNoLimit(x0, y0, x1, y1, C);
+		}
+	}
+	else{
+		if(y0 > y1){
+			drawLineHighNoLimit(x1, y1, x0, y0, C);
+		}
+		else{
+			drawLineHighNoLimit(x0, y0, x1, y1, C);
+		}
+	}
+}
+
 void Render::loadAsset(char *filename){
 	int shape_count, line_count;
 	char asset_type;
@@ -169,6 +269,7 @@ void Render::loadAsset(char *filename){
 		Color C(a, r, g, b);
 		if(asset_type == 'S'){
 			int x0, x1, y0, y1;
+			shapes[asset_count].resetNeff();
 			shapes[asset_count].setAmount(line_count);
 			for(int j = 0; j < line_count; ++j){
 				fscanf(fp, "%d", &x0);
@@ -186,6 +287,26 @@ void Render::loadAsset(char *filename){
 	}
     fclose(fp);
 	
+	drawAll();
+}
+
+void Render::drawAll() {
+	clearScreen();
+	for(int i = 0; i < asset_count; i++){
+		Line L = shapes[i].getExtremeLine();
+		if (isOutOfView(i)) {
+			// do nothing because the shape is out of the view
+		}
+		else {
+			drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
+		}
+	}
+}
+
+bool Render::isOutOfView(int i) {
+	Line L = shapes[i].getExtremeLine();
+
+	return (L.getP1().getAbsis()+P_start.getAbsis() >= screen.getXRes()-10 || L.getP2().getAbsis()+P_start.getAbsis() <= Pview.getAbsis() || L.getP1().getOrdinat()+P_start.getOrdinat() >= screen.getYRes()-10 || L.getP2().getOrdinat()+P_start.getOrdinat() <= Pview.getOrdinat());
 }
 
 void Render::drawAsset(int idx, int x, int y){
@@ -197,16 +318,17 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 		return;
 	} */
 	Line L = S.getExtremeLine();
-			// drawing line
-			for(int i = 0; i < S.getNeff(); ++i){
-				Point P_1(S.getLineAt(i).getP1().getAbsis()+x_start, S.getLineAt(i).getP1().getOrdinat()+y_start);
-				Point P_2(S.getLineAt(i).getP2().getAbsis()+x_start, S.getLineAt(i).getP2().getOrdinat()+y_start);
+	// drawing line
+	for(int i = 0; i < S.getNeff(); ++i){
+		Point P_1(S.getLineAt(i).getP1().getAbsis()+x_start, S.getLineAt(i).getP1().getOrdinat()+y_start);
+		Point P_2(S.getLineAt(i).getP2().getAbsis()+x_start, S.getLineAt(i).getP2().getOrdinat()+y_start);
 
-				drawLine(Line(P_1, P_2), Outline);
-			}
+		drawLine(Line(P_1, P_2), Outline);
+	}
 
-			// color filling
-			for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
+	// color filling
+	if (isColor) {
+		for(int y = L.getP1().getOrdinat() + 1 +y_start; y < L.getP2().getOrdinat()+y_start && y < screen.getYRes(); ++y){
 			bool inside = false;
 			int meetLine = 0;
 			for(int x = L.getP1().getAbsis()+x_start; x < L.getP2().getAbsis()+x_start && x < screen.getXRes(); ++x){
@@ -250,6 +372,7 @@ void Render::drawFullShape(Shape S, Color C, Color Outline, int x_start, int y_s
 				}
 			}
 		}
+	}
 }
 
 void Render::drawEmptyShape(Shape S, Color Outline){
@@ -318,19 +441,11 @@ int Render::skala(int before, int after){
 		P_finish.setAbsis(x_new);
 		P_finish.setOrdinat(y_new);
 
-		clearScreen();
+		// clearArea(P_start.getAbsis(), P_finish.getAbsis()-P_start.getAbsis(), P_start.getOrdinat(), P_finish.getOrdinat()-P_start.getOrdinat());
 
 		skala_elements(before, after);
 		bingkai();
-		for(int i = 0; i < asset_count; i++){
-			Line L = shapes[i].getExtremeLine();
-			if (L.getP1().getAbsis()+P_start.getAbsis() >= screen.getXRes()-10 || L.getP2().getAbsis()+P_start.getAbsis() <= 10 || L.getP1().getOrdinat()+P_start.getOrdinat() >= screen.getYRes()-10 || L.getP2().getOrdinat()+P_start.getOrdinat() <= 10) {
-				// do nothing because the shape is out of the view
-			}
-			else {
-				drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
-			}
-		}
+		drawAll();
 		return 0;
 	}
 }
@@ -387,22 +502,10 @@ void Render::translate(int h, int v){
 		P_start.setOrdinat(y_start_new);
 		P_finish.setAbsis(x_finish_new);
 		P_finish.setOrdinat(y_finish_new);
-
-		// NANTI DI SINI UPDATE SEMUA ELEMEN
-
-		clearScreen();
 		
 		// translate_elements(h, v);
 		bingkai();
-		for(int i = 0; i < asset_count; i++){
-			Line L = shapes[i].getExtremeLine();
-			if (L.getP1().getAbsis()+P_start.getAbsis() >= screen.getXRes()-10 || L.getP2().getAbsis()+P_start.getAbsis() <= 10 || L.getP1().getOrdinat()+P_start.getOrdinat() >= screen.getYRes()-10 || L.getP2().getOrdinat()+P_start.getOrdinat() <= 10) {
-				// do nothing because the shape is out of the view
-			}
-			else {
-				drawAsset(i, P_start.getAbsis(), P_start.getOrdinat());
-			}
-		}
+		drawAll();
 	}
 }
 
@@ -443,14 +546,6 @@ void Render::map(){
 				case 'o': // bigger
 					s++;
 					skala(s-1, s);
-					// if (s > 10) {
-					// 	s = 10;
-					// }
-					// else {
-					// 	if(skala(s-1, s)) {
-					// 		s--;
-					// 	}
-					// }
                     break;
                 default:
                     break;
@@ -567,4 +662,43 @@ Input& Render::getTerminal(){
 
 Color Render::getBGColor(){
 	return BACKGROUND;
+}
+
+bool Render::getIsColor() {
+	return isColor;
+}
+
+bool Render::changeIsColor() {
+	if (isColor) {
+		isColor = false;
+	}
+	else {
+		isColor = true;
+	}
+}
+
+void Render::resetAssetCount() {
+	asset_count = 0;
+}
+
+void Render::showMenu(int menu_option) {
+	int x;
+	int y = 10;
+	int length = 50;
+	int depth = 50;
+	Color C(0, 255, 255, 255);
+	for(int i = 0; i < 5; i++) {
+		x = 50*i+10;
+		drawLineNoLimit(Line(Point(x, y), Point(x + length, y)), C);
+		drawLineNoLimit(Line(Point(x + length, y), Point(x + length, y + depth)), C);
+		drawLineNoLimit(Line(Point(x + length, y + depth), Point(x, y + length)), C);
+		drawLineNoLimit(Line(Point(x, y + length), Point(x, y)), C);
+	}
+	x= 50*menu_option + 10;
+	C.setGreen(0);
+	C.setBlue(0);
+	drawLineNoLimit(Line(Point(x, y), Point(x + length, y)), C);
+	drawLineNoLimit(Line(Point(x + length, y), Point(x + length, y + depth)), C);
+	drawLineNoLimit(Line(Point(x + length, y + depth), Point(x, y + length)), C);
+	drawLineNoLimit(Line(Point(x, y + length), Point(x, y)), C);
 }
