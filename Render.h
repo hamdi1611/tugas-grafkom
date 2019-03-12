@@ -61,7 +61,7 @@ class Render {
 		Color getBGColor();
 		bool getIsColor();
 		bool changeIsColor();
-		void showMenu(int menu_option);
+		void showMenu(int menu_option, bool isMenu);
 };
 
 #endif

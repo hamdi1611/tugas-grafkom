@@ -13,7 +13,7 @@ int main(){
     int menu_option = 0;
     int s = 10; // skala awal
 
-    R.showMenu(menu_option);
+    R.showMenu(menu_option, isMenu);
     for(;;){
         if (R.getTerminal().getIsInput() == (int)State::RECEIVED) {
 			char input = R.getTerminal().getInput();
@@ -86,7 +86,11 @@ int main(){
                         }
                         break;
                     case 's':
-                        if (menu_option == 1) {
+                        if (menu_option == 0) {
+                            R.resetAssetCount();
+                            R.loadAsset("map.txt");
+                        }
+                        else if (menu_option == 1) {
                             R.translate(0, 10);
                         }
                         else if (menu_option == 2) {
@@ -95,7 +99,11 @@ int main(){
                         }
                         break;
                     case 'd':
-                        if (menu_option == 1) {
+                        if (menu_option == 0) {
+                            R.resetAssetCount();
+                            R.loadAsset("heli.txt");
+                        }
+                        else if (menu_option == 1) {
                             R.translate(10, 0);
                         }
                         else if (menu_option == 2) {
@@ -115,7 +123,7 @@ int main(){
             }
 
             // Show menu
-            R.showMenu(menu_option);
+            R.showMenu(menu_option, isMenu);
 
             R.getTerminal().setIsInput(State::WAITING);
         }

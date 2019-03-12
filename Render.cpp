@@ -286,7 +286,8 @@ void Render::loadAsset(char *filename){
 		//std::cout << std::endl << "\r";
 	}
     fclose(fp);
-	
+	P_start.setAbsis(10);
+	P_start.setOrdinat(10);
 	drawAll();
 }
 
@@ -681,24 +682,29 @@ void Render::resetAssetCount() {
 	asset_count = 0;
 }
 
-void Render::showMenu(int menu_option) {
+void Render::showMenu(int menu_option, bool isMenu) {
 	int x;
 	int y = 10;
-	int length = 50;
+	int length = 100;
 	int depth = 50;
 	Color C(0, 255, 255, 255);
 	for(int i = 0; i < 5; i++) {
-		x = 50*i+10;
+		x = length*i+10;
 		drawLineNoLimit(Line(Point(x, y), Point(x + length, y)), C);
 		drawLineNoLimit(Line(Point(x + length, y), Point(x + length, y + depth)), C);
-		drawLineNoLimit(Line(Point(x + length, y + depth), Point(x, y + length)), C);
-		drawLineNoLimit(Line(Point(x, y + length), Point(x, y)), C);
+		drawLineNoLimit(Line(Point(x + length, y + depth), Point(x, y + depth)), C);
+		drawLineNoLimit(Line(Point(x, y + depth), Point(x, y)), C);
 	}
-	x= 50*menu_option + 10;
-	C.setGreen(0);
+	x = length*menu_option + 10;
+	if (isMenu) {
+		C.setRed(0);
+	}
+	else {
+		C.setGreen(0);
+	}
 	C.setBlue(0);
 	drawLineNoLimit(Line(Point(x, y), Point(x + length, y)), C);
 	drawLineNoLimit(Line(Point(x + length, y), Point(x + length, y + depth)), C);
-	drawLineNoLimit(Line(Point(x + length, y + depth), Point(x, y + length)), C);
-	drawLineNoLimit(Line(Point(x, y + length), Point(x, y)), C);
+	drawLineNoLimit(Line(Point(x + length, y + depth), Point(x, y + depth)), C);
+	drawLineNoLimit(Line(Point(x, y + depth), Point(x, y)), C);
 }
