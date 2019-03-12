@@ -101,7 +101,7 @@ int main(){
                     case 'd':
                         if (menu_option == 0) {
                             R.resetAssetCount();
-                            R.loadAsset("heli.txt");
+                            R.loadAsset("ship.txt");
                         }
                         else if (menu_option == 1) {
                             R.translate(10, 0);
